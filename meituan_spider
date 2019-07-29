@@ -1,0 +1,64 @@
+# 获取美团网上的全部店铺信息：包括店名，地址，电话
+# -*- coding:utf-8 -*-  #
+
+
+from bs4 import BeautifulSoup
+import requests
+import json
+import lxml
+from lxml import etree
+import re
+
+sess = requests.session()
+
+url = 'https://hz.meituan.com/shenghuo/'
+headers ={
+    'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'Accept-Language':'zh-CN,zh;q=0.9',
+    'Cache-Control':'max-age=0',
+    'Connection':'keep-alve',
+    'Host':'hz.meituan.com',
+    # 'Referer':'https://hz.meituan.com/',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36',
+    'Content-Type': 'text/html; charset=utf-8',
+}
+list = []
+
+
+#在主页获取店铺id
+
+def get_dianpu_id():
+    html = sess.get("https://hz.meituan.com/",headers=headers).text
+    html = sess.get(url,headers=headers).text
+    #print(html)
+    i=1
+    while i<15:
+        tree = etree.HTML(html)
+        start_url_list = tree.xpath("//div[@class='list-item-desc-top']//a/@href")
+        for each in start_url_list:  #https://www.meituan.com/shenghuo/2462279/
+            if re.search("/\d+/$",each):
+                list.append(each)
+                print(list)
+                #print(each)
+    i = i+1
+    print(len(start_url_list))
+
+get_dianpu_id()
+
+
+#获取店铺信息详情
+
+def get_item_info(url):
+    html = requests.get(url,headers=headers).text
+    soup = BeautifulSoup(html,'lxml')
+    title = soup.find('h1','class_ = "seller-name').text
+    address = soup.find('span',href="javascript:void(0);").text
+    telephone = soup.find('span',class_ ='item').text
+    print('店名'+ title)
+    print('地址'+ address)
+    print('电话'+telephone)
+    print(''---------------------------------'')
+    return(title,address,telephone)
+
+get_item_info()
