@@ -91,7 +91,7 @@ sougou_weixin()
          print(html)
          #砍树
          tree = etree.HTML(html)
-         #正则方法
+         # 正则方法
          #author = re.search('<p class="news-from">(.*?)</p>', html, re.S)
          #author = re.findall('<p class="news-from">(.*?)</p>', html, re.S)
          #author = tree.xpath("//p[@class='news-from']")
